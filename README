@@ -1,0 +1,53 @@
+About
+=====
+
+`mvre` is a command line utility to systematically rename lots of
+files. It uses regular expressions to match POSIX paths and
+backreferences to 'copy over' parts of the file path. For a
+complete and up-to-date description of the utility's capabilities
+and information on its usage, please run it with the `-h` option:
+
+    ./mvre.py -h
+
+Platform Compatibility
+======================
+
+`mvre` is compatible with all POSIX filesystems. This includes
+all distributions of Linux and Mac OS X. `mvre` is mainly
+developed for, and has been tested on, Ubuntu.
+
+Please note that this utility will *NEVER* be compatible with
+MS Windows, since Windows' path separator (the backslash)
+conflicts with the regex escape character.
+
+Dependencies
+============
+
+`mvre` requires Python 2.5 or later. (Earlier versions might also
+work, but use them at your own risk.)
+
+`mvre` also relies on the Python module `argparse`. It is
+available on Debian-based platforms in the package
+`python-argparse`. (Please use your favorite web search engine to
+find RPM or source code distributions of it.)
+
+Name
+====
+
+The name of this utility, `mvre` is composed of the Unix command
+`mv` for moving or renaming files, and `re`, which stands for
+'regular expressions'.
+
+Bugs
+====
+
+There is currently no bug tracker for `mvre`. If you believe to
+have found a bug, please send an email to the developer at
+
+    marion.zepf@gmail.com
+
+License
+=======
+
+`mvre` is distributed under the BSD License. For the full license
+text, please see the file `LICENSE`.
