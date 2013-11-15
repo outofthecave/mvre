@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # coding: UTF-8
-# This program will never be Windows-compatible, since Windows' path separator 
+# This program will never be Windows-compatible, since Windows' path separator
 # conflicts with the regex escape character.
 
 import os
@@ -11,18 +11,21 @@ from posixpathre import *
 
 SHORT_DESCR = "rename large amounts of files using regular expressions."
 LONG_DESCR = """\
-Automatically resolves backreferences in NEWNAME to groups in the pattern. 
-The whole pattern can be referenced as group 0. Two formats of backreferences 
+Automatically resolves backreferences in NEWNAME to groups in the pattern.
+The whole pattern can be referenced as group 0. Two formats of backreferences
 are accepted: `\\1' and `$1'.
-Both PATTERN and NEWNAME may be absolute or relative file paths. Make sure to 
-escape special characters like `.' in PATTERN to avoid interpretation as 
-a regular expression. Escaping is not necessary in NEWNAME except for the 
-backslash `\\' and the dollar sign `$'. The escape character is a single 
+Both PATTERN and NEWNAME may be absolute or relative file paths. Make sure to
+escape special characters like `.' in PATTERN to avoid interpretation as
+a regular expression. Escaping is not necessary in NEWNAME except for the
+backslash `\\' and the dollar sign `$'. The escape character is a single
 backslash `\\'."""
 parser = ArgumentParser(description=SHORT_DESCR, epilog=LONG_DESCR)
+parser.add_argument("--git", action="store_true", dest="git_mode",
+    default=False, help="use `git mv` instead of `mv`. WARNING: This does NOT "
+    "prompt you to override existing files!")
 parser.add_argument("-v", "--verbose", action="store_true", dest="verbose",
     default=False, help="be verbose")
-parser.add_argument("-y", action="store_true", dest="assume_yes", 
+parser.add_argument("-y", action="store_true", dest="assume_yes",
     default=False, help="assume yes as the answer to all prompts")
 parser.add_argument("pattern", metavar="PATTERN", type=str,
     help="match the existing filenames against this pattern")
@@ -43,7 +46,7 @@ q  quit the program without moving this file
 
 
 
-def askConfirmation(oldpath, newpath):
+def askConfirmation(command):
     """
     show a prompt to the user asking to confirm the deletion of a file."""
     global cl
@@ -54,7 +57,7 @@ def askConfirmation(oldpath, newpath):
         # user may exit whenever they like
         while True:
             # ask the user for confirmation
-            answer = raw_input("mv %s %s? [y/n/a/q/?] " % (oldpath, newpath))
+            answer = raw_input(command + " [y/n/a/q/?] ")
             if answer.startswith("y"):
                 return True
             elif answer.startswith("n"):
@@ -70,10 +73,10 @@ def askConfirmation(oldpath, newpath):
                 print PROMPT_USAGE
 
 def resolveBackrefs(new_name, matched, groups):
-    """Replace all backreferences in `new_name' by the corresponding value 
+    """Replace all backreferences in `new_name' by the corresponding value
     from groups or by the value of `matched' if the backref number is 0.
     """
-    # TODO let enable simple calculations on the backrefs
+    # TODO enable simple calculations on the backrefs
     # e.g. mvre '(\d)' '${$1+1}' turns '1' into '2'
     backref_matches = re.finditer(P_BACKREF, new_name)
     resolved_name = ""
@@ -102,9 +105,14 @@ def main(raw_cl_args):
     matchingPaths = pathPattern.findPaths()
     for pathMatch in matchingPaths:
         old_name = pathMatch.path
-        new_name = resolveBackrefs(cl.new_name, pathMatch.path, pathMatch.groups)
-        if askConfirmation(old_name, new_name):
-            command = "mv -i '%s' '%s'" % (old_name, new_name)
+        new_name = resolveBackrefs(cl.new_name, pathMatch.path,
+            pathMatch.groups)
+        if cl.git_mode:
+            command_tmpl = "git mv '%s' '%s'"
+        else:
+            command_tmpl = "mv -i '%s' '%s'"
+        command = command_tmpl % (old_name, new_name)
+        if askConfirmation(command):
             if cl.verbose:
                 print command
             os.system(command)
