@@ -9,6 +9,31 @@ and information on its usage, please run it with the `-h` option:
 
     ./mvre.py -h
 
+Usage Examples
+==============
+
+To change all file extensions from `txt` to `tsv`, use one of the
+following command alternatives:
+
+    ./mvre.py '(.*)[.]txt' '\1.tsv'
+    ./mvre.py '(.*)[.]txt' '$1.tsv'
+
+The `\1` or `$1` is a backreference to the first match group. To
+do the same thing using `git mv` instead of `mv`, pass the
+`--git` option to `mvre`:
+
+    ./mvre.py --git '(.*)[.]txt' '\1.tsv'
+    ./mvre.py --git '(.*)[.]txt' '$1.tsv'
+
+You can also do this across several directories by matching and
+back-referencing the directory names:
+
+    ./mvre.py '(.*)/(.*)[.]txt' '\1/\2.tsv'
+    ./mvre.py '(.*)/(.*)[.]txt' '$1/$2.tsv'
+
+There are, of course, many more use cases than these few. Use the
+`-h` option to get more information about how to use `mvre`.
+
 Platform Compatibility
 ======================
 
