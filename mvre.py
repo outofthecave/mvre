@@ -72,6 +72,12 @@ def askConfirmation(command):
             else:
                 print PROMPT_USAGE
 
+def noneToEmptyString(string_or_none):
+    if string_or_none is None:
+        return ""
+    else:
+        return string_or_none
+
 def resolveBackrefs(new_name, matched, groups):
     """Replace all backreferences in `new_name' by the corresponding value
     from groups or by the value of `matched' if the backref number is 0.
@@ -91,7 +97,7 @@ def resolveBackrefs(new_name, matched, groups):
         else:
             # references to non-existing groups are not expanded
             replacement = match.group()
-        resolved_name += replacement
+        resolved_name += noneToEmptyString(replacement)
         prev_end = match.end()
     # the part after the last backref
     resolved_name += new_name[prev_end:]
