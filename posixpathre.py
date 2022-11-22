@@ -6,7 +6,7 @@ import re
 
 class PathPattern(object):
     """A regex pattern describing a filesystem path. Only compatible with 
-    Posix. Can be used with unicode strings.
+    Posix.
     Since the dot character is ambiguous, the following rules apply: a 
     single dot or two consecutive dots are not treated as a regular 
     expression iff they occur between slashes. Dots at the beginning or 
@@ -64,11 +64,7 @@ class PathPattern(object):
         """Return an absolute self."""
         path = self.p
         if not self.isabs():
-            if isinstance(path, unicode):
-                cwd = os.getcwdu()
-            else:
-                cwd = os.getcwd()
-            path = posixpath.join(cwd, path)
+            path = posixpath.join(os.getcwd(), path)
         return PathPattern(path).normpath()
 
     def join(self, *others, **kwargs):
@@ -154,10 +150,8 @@ class PathPattern(object):
     def normpath(self):
         """Normalize path, eliminating double slashes, etc."""
         path = self.p
-        # Preserve unicode (if path is unicode)
-        slash, dot = (u'/', u'.') if isinstance(path, unicode) else ('/', '.')
         if path == '':
-            return PathPattern(dot)
+            return PathPattern('.')
         initial_slashes = int(path.startswith('/'))
         # POSIX allows one or two initial slashes, but treats three or more
         # as single slash.
@@ -177,13 +171,13 @@ class PathPattern(object):
             elif new_comps:
                 new_comps.pop()
         comps = new_comps
-        path = slash.join(comps)
+        path = '/'.join(comps)
         if initial_slashes:
-            path = slash*initial_slashes + path
+            path = '/' * initial_slashes + path
         if path:
             return PathPattern(path)
         else:
-            return PathPattern(dot)
+            return PathPattern('.')
 
     def getTokens(self):
         """Return a list of PathPatterns, one for each node in this path.
@@ -249,7 +243,6 @@ class PathPattern(object):
         """
         pattern = self.expanduser().expandvars().normpath()
         tokenIter = iter(pattern.getTokens())
-#        print pattern.getTokens()
         try:
             token = next(tokenIter)
         except StopIteration as error:
@@ -277,12 +270,9 @@ class PathPattern(object):
                 try:
                     token = next(tokenIter)
                 except StopIteration:
-#                    print "except StopIteration: break"
                     break
                 numMatchesCur = numMatchesNext
                 numMatchesNext = 0
-#            print "token =", repr(token)
-#            print "pathQ =", pathQ
             curPath = pathQ.pop(0)
             numMatchesCur -= 1
             # follow references to the parent dir
@@ -296,9 +286,7 @@ class PathPattern(object):
                 try:
                     ls = os.listdir(curPath.path)
                 except OSError as err:
-#                    print err
                     continue
-#                print "ls", curPath
                 for item in sorted(ls):
                     pathMatch = token.match(item)
                     if pathMatch:
@@ -339,6 +327,6 @@ if __name__ == "__main__":
     import sys
     p = PathPattern(sys.argv[1])
     for pathMatch in p.findPaths():
-        print pathMatch, pathMatch.groups
+        print(pathMatch, pathMatch.groups)
 
 
