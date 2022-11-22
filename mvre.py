@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # coding: UTF-8
 # This program will never be Windows-compatible, since Windows' path separator
 # conflicts with the regex escape character.
@@ -57,7 +57,7 @@ def askConfirmation(command):
         # user may exit whenever they like
         while True:
             # ask the user for confirmation
-            answer = raw_input(command + " [y/n/a/q/?] ")
+            answer = input(command + " [y/n/a/q/?] ")
             if answer.startswith("y"):
                 return True
             elif answer.startswith("n"):
@@ -70,7 +70,7 @@ def askConfirmation(command):
                 sys.exit(0)
             # '?' or invalid input
             else:
-                print PROMPT_USAGE
+                print(PROMPT_USAGE)
 
 def noneToEmptyString(string_or_none):
     if string_or_none is None:
@@ -120,7 +120,7 @@ def main(raw_cl_args):
         command = command_tmpl % (old_name, new_name)
         if askConfirmation(command):
             if cl.verbose:
-                print command
+                print(command)
             os.system(command)
 
 if __name__ == "__main__":

@@ -45,17 +45,6 @@ Please note that this utility will *NEVER* be compatible with
 MS Windows, since Windows' path separator (the backslash)
 conflicts with the regex escape character.
 
-Dependencies
-============
-
-`mvre` requires Python 2.5 or later. (Earlier versions might also
-work, but use them at your own risk.)
-
-`mvre` also relies on the Python module `argparse`. It is
-available on Debian-based platforms in the package
-`python-argparse`. (Please use your favorite web search engine to
-find RPM or source code distributions of it.)
-
 Name
 ====
 
